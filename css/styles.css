@@ -150,10 +150,15 @@ nav a,
     gap: 45px
 }
 
-.lead {
-    font: 24px Georgia;
+.columns p {
     color: var(--ink)
 }
+
+.lead {
+    color: var(--ink);
+    line-height: 1.7;
+}
+
 
 .stats {
     max-width: 1180px;
@@ -295,6 +300,12 @@ footer {
     color: var(--accent)
 }
 
+.collection-hero .subtag {
+    margin-top: 12px;
+    font-size: 16px;
+    color: var(--muted);
+}
+
 .projects {
     padding: 85px max(6vw, calc((100vw - 1180px)/2));
     display: grid;
@@ -425,4 +436,107 @@ footer {
     .stats {
         grid-template-columns: 1fr
     }
+}
+
+/* Clickable project images */
+.gallery-trigger {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    cursor: zoom-in;
+}
+
+.gallery-trigger:focus-visible,
+.project-gallery button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 5px;
+}
+
+body.gallery-open {
+    overflow: hidden;
+}
+
+/* Popup */
+.project-gallery {
+    width: min(1000px, 94vw);
+    max-height: 92vh;
+    max-height: 92dvh;
+    padding: clamp(16px, 3vw, 28px);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--panel);
+    color: var(--ink);
+    overflow-y: auto;
+}
+
+.project-gallery::backdrop {
+    background: rgb(0 0 0 / 85%);
+}
+
+.gallery-heading,
+.gallery-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.gallery-heading h2 {
+    margin: 0;
+    font: clamp(22px, 4vw, 32px) Georgia, serif;
+}
+
+.project-gallery button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+}
+
+.project-gallery button:hover {
+    border-color: var(--accent);
+}
+
+.project-gallery button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.gallery-close,
+.gallery-count {
+    flex-shrink: 0;
+}
+
+.gallery-figure {
+    margin: 22px 0;
+}
+
+.gallery-image {
+    display: block;
+    width: 100%;
+    height: min(58vh, 650px);
+    object-fit: contain;
+    background: var(--bg);
+}
+
+.gallery-image[hidden] {
+    display: none;
+}
+
+.gallery-caption {
+    margin-top: 14px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.gallery-count {
+    color: var(--muted);
+    font-size: 14px;
 }
