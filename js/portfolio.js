@@ -8,17 +8,71 @@ const collections = {
             {
                 title: "Nourish & Co.",
                 type: "Food and wellness identity",
-                image: "img/nourish_and_co.png"
+                image: "img/Nourish and Co/nourish_and_co.png",
+                gallery: [
+                {
+                    src: "img/Nourish and Co/nourish_and_co.png",
+                    caption: "Brand overview"
+                },
+                {
+                    src: "img/Nourish and Co/nourish_logo.png",
+                    caption: "Logo design"
+                },
+                {
+                    src: "img/Nourish and Co/nourish_packaging.png",
+                    caption: "Packaging design"
+                },
+                {
+                    src: "img/Nourish and Co/nourish_business_cards.png",
+                    caption: "Business cards"
+                }
+            ]
             },
             {
                 title: "Northline Health",
                 type: "Community healthcare brand",
-                image: "img/northline_health.png"
+                image: "img/Northline Health/northline_health.png",
+                gallery: [
+                {
+                    src: "img/Northline Health/northline_health.png",
+                    caption: "Brand overview"
+                },
+                {
+                    src: "img/Northline Health/northline_logo.png",
+                    caption: "Logo design"
+                },
+                {
+                    src: "img/Northline Health/northline_packaging.png",
+                    caption: "Packaging design"
+                },
+                {
+                    src: "img/Northline Health/northline_business_cards.png",
+                    caption: "Business cards"
+                }
+            ]
             },
             {
                 title: "Solstice Studio",
                 type: "Creative business identity",
-                image: "img/solstice_studio.png"
+                image: "img/Solstice Studio/solstice_studio.png",
+                gallery: [
+                {
+                    src: "img/Solstice Studio/solstice_studio.png",
+                    caption: "Brand overview"
+                },
+                {
+                    src: "img/Solstice Studio/solstice_logo.png",
+                    caption: "Logo design"
+                },
+                {
+                    src: "img/Solstice Studio/solstice_packaging.png",
+                    caption: "Packaging design"
+                },
+                {
+                    src: "img/Solstice Studio/solstice_business_cards.png",
+                    caption: "Business cards"
+                }
+            ]
             }
         ]
     },
@@ -42,7 +96,7 @@ const collections = {
             {
                 title: "The Annual Edit",
                 type: "Editorial report",
-                image: "img/the_annual_edit.png"
+                image: "img/The Annual Edit/the_annual_edit.png"
             }
         ]
     },
@@ -56,17 +110,17 @@ const collections = {
             {
                 title: "Pause. Breathe.",
                 type: "Mental wellness campaign",
-                image: "img/pause_breathe.png"
+                image: "img/Pause Breathe/pause_breathe.png"
             },
             {
                 title: "More Than a Meal",
                 type: "Food access awareness",
-                image: "img/more_than_a_meal.png"
+                image: "img/More Than a Meal/more_than_a_meal.png"
             },
             {
                 title: "Built for the Next Step",
                 type: "Education enrollment ads",
-                image: "img/for_the_next_step.png"
+                image: "img/For the Next Step/for_the_next_step.png"
             }
         ]
     },
@@ -85,12 +139,12 @@ const collections = {
             {
                 title: "Bloom Creative",
                 type: "Launch campaign",
-                image: "img/bloom_creative.png"
+                image: "img/Bloom Creative/bloom_creative.png"
             },
             {
                 title: "Local Table",
                 type: "Seasonal content system",
-                image: "img/local_table.png"
+                image: "img/Local Table/local_table.png"
             }
         ]
     },
@@ -162,17 +216,23 @@ if (collection) {
         .map((project, index) => {
             return `
                 <article>
-                    <div class="case-art">
+                    <button
+                        type="button"
+                        class="case-art gallery-trigger"
+                        data-project="${index}"
+                        aria-label="Open gallery for ${project.title}"
+                        aria-haspopup="dialog"
+                    >
                         <img
                             src="${project.image}"
                             alt="${project.title} - ${project.type}"
                             loading="lazy"
                         >
 
-                        <div class="case-number">
+                        <span class="case-number">
                             <span>0${index + 1}</span>
-                        </div>
-                    </div>
+                        </span>
+                    </button>
 
                     <div class="project-info">
                         <p>${project.type}</p>
@@ -186,4 +246,130 @@ if (collection) {
             `;
         })
         .join("");
+}
+
+if (collection) {
+    const gallery = document.createElement("dialog");
+    gallery.className = "project-gallery";
+    gallery.setAttribute("aria-labelledby", "gallery-title");
+
+    gallery.innerHTML = `
+        <div class="gallery-heading">
+            <h2 id="gallery-title"></h2>
+            <button type="button" class="gallery-close" autofocus>
+                Close ✕
+            </button>
+        </div>
+
+        <figure class="gallery-figure">
+            <img class="gallery-image" alt="">
+            <figcaption
+                class="gallery-caption"
+                aria-live="polite"
+                aria-atomic="true"
+            ></figcaption>
+        </figure>
+
+        <p class="gallery-error" role="status" hidden>
+            This image could not load. Please try another item.
+        </p>
+
+        <div class="gallery-controls">
+            <button type="button" class="gallery-prev"
+                aria-label="Previous image">← Previous</button>
+            <span class="gallery-count"></span>
+            <button type="button" class="gallery-next"
+                aria-label="Next image">Next →</button>
+        </div>
+    `;
+
+    document.body.append(gallery);
+
+    const title = gallery.querySelector("#gallery-title");
+    const image = gallery.querySelector(".gallery-image");
+    const caption = gallery.querySelector(".gallery-caption");
+    const count = gallery.querySelector(".gallery-count");
+    const previous = gallery.querySelector(".gallery-prev");
+    const next = gallery.querySelector(".gallery-next");
+    const error = gallery.querySelector(".gallery-error");
+
+    let items = [];
+    let currentIndex = 0;
+    let projectTitle = "";
+    let opener = null;
+
+    function showImage(index) {
+        currentIndex = (index + items.length) % items.length;
+
+        const item = items[currentIndex];
+
+        error.hidden = true;
+        image.hidden = false;
+        image.alt = item.alt || `${projectTitle}: ${item.caption || "Project image"}`;
+        image.src = item.src;
+
+        caption.textContent = item.caption || projectTitle;
+        count.textContent = `${currentIndex + 1} / ${items.length}`;
+
+        previous.disabled = items.length < 2;
+        next.disabled = items.length < 2;
+    }
+
+    image.addEventListener("error", () => {
+        image.hidden = true;
+        error.hidden = false;
+    });
+
+    document.querySelectorAll(".gallery-trigger").forEach((button) => {
+        button.addEventListener("click", () => {
+            const project = collection.projects[Number(button.dataset.project)];
+
+            items = project.gallery?.length
+                ? project.gallery
+                : [{ src: project.image, caption: project.type }];
+
+            projectTitle = project.title;
+            title.textContent = projectTitle;
+            opener = button;
+
+            showImage(0);
+            gallery.showModal();
+            document.body.classList.add("gallery-open");
+        });
+    });
+
+    previous.addEventListener("click", () => showImage(currentIndex - 1));
+    next.addEventListener("click", () => showImage(currentIndex + 1));
+
+    gallery.querySelector(".gallery-close").addEventListener("click", () => {
+        gallery.close();
+    });
+
+    gallery.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            showImage(currentIndex + (event.key === "ArrowRight" ? 1 : -1));
+        }
+    });
+
+    // Close when the visitor clicks outside the popup.
+    gallery.addEventListener("click", (event) => {
+        const bounds = gallery.getBoundingClientRect();
+
+        if (
+            event.target === gallery &&
+            (event.clientX < bounds.left ||
+             event.clientX > bounds.right ||
+             event.clientY < bounds.top ||
+             event.clientY > bounds.bottom)
+        ) {
+            gallery.close();
+        }
+    });
+
+    // Escape closes a native dialog automatically.
+    gallery.addEventListener("close", () => {
+        document.body.classList.remove("gallery-open");
+        opener?.focus();
+    });
 }
